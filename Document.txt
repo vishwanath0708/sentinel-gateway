@@ -1,0 +1,309 @@
+🔵 PHASE 1 — Core Engine (Single Node Foundation)
+✅ 1️⃣ TokenBucket (Pure Java)
+
+📂 limiter/TokenBucket.java
+
+Implement:
+
+capacity
+
+refillRatePerSecond
+
+availableTokens
+
+lastRefillTime
+
+tryConsume()
+
+Focus:
+
+Thread safety
+
+Precise refill math
+
+No race conditions
+
+This is your core engine.
+
+✅ 2️⃣ Per-Client Bucket Manager
+
+📂 service/RateLimiterService.java
+
+Implement:
+
+ConcurrentHashMap<String, TokenBucket>
+
+getOrCreateBucket()
+
+shouldAllow(clientId)
+
+Now it supports multiple clients.
+
+✅ 3️⃣ Request & Response Models
+
+📂 model/
+
+RateLimitRequest
+
+RateLimitResponse
+
+Clean API contract.
+
+✅ 4️⃣ REST Controller
+
+📂 controller/RateLimiterController.java
+
+Expose:
+
+POST /shouldAllow
+
+
+Flow:
+Controller → Service → TokenBucket
+
+Now system is live.
+
+✅ 5️⃣ Concurrency Testing
+
+Simulate 100 threads
+
+Verify:
+
+No negative tokens
+
+Correct refill
+
+No lost updates
+
+If this fails → fix before moving ahead.
+
+🟢 PHASE 2 — Observability Layer
+✅ 6️⃣ Metrics Integration
+
+Add:
+
+Micrometer
+
+Counters:
+
+allowed_requests
+
+rejected_requests
+
+Timer:
+
+request_latency
+
+Integrate with:
+
+Prometheus
+
+Grafana
+
+Now it looks production-grade.
+
+🟡 PHASE 3 — Distributed Layer (Redis)
+
+Now we upgrade architecture.
+
+✅ 7️⃣ Add Redis Dependency
+
+Add:
+
+Spring Data Redis
+
+Run local Redis.
+
+✅ 8️⃣ Redis-Based Token Bucket
+
+Replace in-memory logic with:
+
+Redis key per client
+
+TTL handling
+
+Atomic Lua script
+
+Lua script must:
+
+Refill
+
+Check
+
+Decrement
+
+Set expiry
+
+All atomically.
+
+Now your system becomes distributed.
+
+✅ 9️⃣ Multiple Instance Simulation
+
+Run 2–3 gateway instances.
+
+Verify:
+
+Global rate limit is correct
+
+No over-consumption
+
+This proves distributed correctness.
+
+🟠 PHASE 4 — Multi-Tenant Policy Engine
+
+Now we add business logic.
+
+✅ 1️⃣0️⃣ Policy Model
+
+📂 model/Policy.java
+
+Fields:
+
+clientId
+
+tier
+
+rate
+
+capacity
+
+✅ 1️⃣1️⃣ Database Integration (PostgreSQL)
+
+Add:
+
+Spring Data JPA
+
+Policy repository
+
+Store client policies in DB.
+
+✅ 1️⃣2️⃣ Policy Caching Layer
+
+Implement:
+
+Cache policies in memory
+
+Refresh periodically
+
+Hot reload
+
+Now dynamic configuration works.
+
+🔴 PHASE 5 — Failure Handling
+
+Now think like infra engineer.
+
+✅ 1️⃣3️⃣ Redis Failure Strategy
+
+Implement:
+
+Fail-open mode
+
+Fail-closed mode
+
+Fallback to local bucket
+
+Add configuration flag.
+
+✅ 1️⃣4️⃣ Circuit Breaker Concept
+
+If Redis latency spikes:
+
+Stop hitting Redis
+
+Temporarily fallback
+
+Now your system is resilient.
+
+🟣 PHASE 6 — Adaptive Throttling
+
+Now we add intelligence.
+
+✅ 1️⃣5️⃣ System Monitoring Module
+
+Track:
+
+CPU usage
+
+Memory usage
+
+Error rate
+
+✅ 1️⃣6️⃣ Dynamic Refill Adjustment
+
+If:
+
+CPU > threshold
+
+Error rate high
+
+Reduce:
+
+Refill rate
+
+Global QPS
+
+Now your gateway adapts.
+
+🟤 PHASE 7 — Global Rate Controller
+
+Add:
+
+System-wide QPS cap
+
+Priority-based shedding
+
+Emergency throttling
+
+Now enterprise-level control.
+
+⚫ PHASE 8 — Benchmarking
+
+Use:
+
+JMeter or k6
+
+Test:
+
+10k RPS
+
+50k RPS
+
+High concurrency
+
+Redis latency impact
+
+Measure:
+
+Throughput
+
+p95 latency
+
+Rejection %
+
+CPU usage
+
+Document results.
+
+⚪ PHASE 9 — HLD + LLD Documentation
+
+Prepare:
+
+High-Level Design:
+
+Components
+
+Data flow
+
+Bottlenecks
+
+Scaling plan
+
+Study & compare with:
+
+Kong
+
+Spring Cloud Gateway
+
+Amazon API Gateway
