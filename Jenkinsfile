@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+    
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t sentinel-gateway:latest .'
+            }
+        }
+        
+        stage('Push to Docker Hub') {
+            steps {
+                sh '''
+                    docker tag sentinel-gateway:latest vishwanathhubballi/sentinelgateway:latest
+                    docker login -u vishwanathhubballi -p Matrix.neo
+                    docker push vishwanathhubballi/sentinelgateway:latest
+                '''
+            }
+        }
+    }
+}
