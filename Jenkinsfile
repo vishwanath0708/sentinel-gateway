@@ -11,7 +11,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh 'docker build -t sentinel-gateway:latest .'
-                echo "testing CICD "
+                
             }
         }
         
